@@ -35,3 +35,20 @@ As we can observe in the resulting solution, nmap indicates that the port 21 is 
   
 ![Image](https://github.com/user-attachments/assets/b5904d6d-c1ee-40e6-8850-df5de0cf6d77)
 
+
+## Exploiting
+
+### Metasploit
+
+![Image](https://github.com/user-attachments/assets/ca79b983-85b0-4f32-a7e1-6f0c9a3374a9)
+
+
+![Image](https://github.com/user-attachments/assets/41c25a83-aa3a-4801-ac53-0a06f9efd373)
+
+![Image](https://github.com/user-attachments/assets/68589428-38f3-4536-a015-b619f25c2084)
+
+![Image](https://github.com/user-attachments/assets/5f802986-e03c-4d5a-9e32-3a2c4ce128ce)
+
+![imagen](https://github.com/user-attachments/assets/aecea981-cea9-4c14-a43b-2008e9ed877e)
+
+### Python
