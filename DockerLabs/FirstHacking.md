@@ -35,6 +35,17 @@ As we can observe in the resulting solution, nmap indicates that the port 21 is 
   
 ![Image](https://github.com/user-attachments/assets/b5904d6d-c1ee-40e6-8850-df5de0cf6d77)
 
+Port 21 Vulnerabilities (FTP)
+
+The File Transfer Protocol (FTP) is assigned port 21. FTP enables users to send and receive files in an unencrypted transmission to and from servers. FTP is considered outdated and insecure and should not be used for any file transfers, especially any sensitive data, as it can easily be exploited using any of the following methods:
+
+    Brute-forcing passwords
+    Anonymous authentication (it’s possible to log into the FTP port with “anonymous” as the username and password)
+    Cross-site scripting
+    Directory traversal attacks
+    Man-in-the-middle
+
+
 Using searchsploit. Finding exploiting options.
 
 ![Image](https://github.com/user-attachments/assets/ca79b983-85b0-4f32-a7e1-6f0c9a3374a9)
