@@ -23,6 +23,7 @@ We start by doing a general scan with the tool nmap against the victims ip, the 
 - -vvv: Increase verbosity (more information)
 - -n: No DNS resolution (faster scanning)
 - -Pn: Ignores if the ip is active or not
+- Export result to a file:
     - -oG: Exports the result in a grepable format (to extract more easily the data with tools such as grep, awk)
     - -oN: Export the result to the designated file.
 
