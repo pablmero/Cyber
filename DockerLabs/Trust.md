@@ -116,6 +116,22 @@ Password: chocolate
 ![imagen](https://github.com/user-attachments/assets/b1c5eb0a-ffda-4148-b9aa-7ee071c26b34)
 
 It works! We are now inside Mario's machine. But even if we have access to his machine, we won't be able to access every file or directory, so as usual, we need to escalate priviledges to root.
-We can carry out further checks by using ```whoami``` (checking the user) and ```sudo -l``` (listing the commands we can execute as sudo)
+We can carry out further checks by using ```whoami``` (checking the user) and ```sudo -l``` (listing the commands we can execute as sudo).
+
 ![imagen](https://github.com/user-attachments/assets/05fcdc98-835b-4861-98f1-72591946d773)
 
+As we can see in the image showing the result, we can run vim commands. If you are unsure of how to exploit a certain command you can always check [GTFObins](https://gtfobins.github.io/). GTFOBins is a curated list of Unix binaries that can be used to bypass local security restrictions in misconfigured systems.
+
+The project collects legitimate functions of Unix binaries that can be abused to break out restricted shells, escalate or maintain elevated privileges, transfer files, spawn bind and reverse shells, and facilitate the other post-exploitation tasks.
+
+In this case, vim is allowed for sudo commands so we search for that type of exploiting.
+
+If the binary is allowed to run as superuser by sudo, it does not drop the elevated privileges and may be used to access the file system, escalate or maintain privileged access.
+
+    sudo vim -c ':!/bin/sh'
+
+Execute vim and then escape the editor with !/bin/sh.
+
+![imagen](https://github.com/user-attachments/assets/d055479d-a56e-4e63-86fb-2e18d7a319ab)
+
+We are root!
