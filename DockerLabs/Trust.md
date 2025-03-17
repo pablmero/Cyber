@@ -97,7 +97,25 @@ Infiltration refers to the act of secretly entering, observing, or extracting se
 To perform this infiltration we can use tools such us hydra or medusa. 
 In this case, we will use Hydra, which is an open-source tool designed for performing brute-force attacks on various protocols and services to test the authentication mechanisms.
 
-``` hydra -l mario -P /usr/share/wordlists/rockyou.txt -ssh://172.18.0.2 ```
+``` hydra -l mario -P /path/to/rockyou.txt ssh://172.18.0.2 -t 4 ```
 - -l username: Name of the possible username
 - -P: Route fow downloading the rockyou dictionary (wordlist with possible passwords)
 - ssh://172.18.0.2: Specify the service (ssh) y and the machine ip
+- -t 4: To reduce the tasks when there are many SSH configurations
+
+To determine the rockyou.txt route we can use the command ```locate rockyou.txt``` which will give us the full path to the file or directory.
+
+![imagen](https://github.com/user-attachments/assets/d5c6d77d-e8fe-427d-a6c9-ad33c31ffd6c)
+
+Once performed the hydra brute force attack, we obtain a password, so the possible username was indeed an ssh username.
+Let's try to access through ssh now
+
+```ssh mario@172.18.0.2```
+Password: chocolate
+
+![imagen](https://github.com/user-attachments/assets/b1c5eb0a-ffda-4148-b9aa-7ee071c26b34)
+
+It works! We are now inside Mario's machine. But even if we have access to his machine, we won't be able to access every file or directory, so as usual, we need to escalate priviledges to root.
+We can carry out further checks by using ```whoami``` (checking the user) and ```sudo -l``` (listing the commands we can execute as sudo)
+![imagen](https://github.com/user-attachments/assets/05fcdc98-835b-4861-98f1-72591946d773)
+
