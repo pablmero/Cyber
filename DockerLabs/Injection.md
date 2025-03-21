@@ -1,7 +1,7 @@
 # Injection. Docker Labs.
 
 ## Deployment
-Start de vulnerable machine ```bash auto_deploy.sh injection.tar``` and check connectivity.
+Start the vulnerable machine ```bash auto_deploy.sh injection.tar``` and check connectivity.
 
 ![Image](https://github.com/user-attachments/assets/d0a83f2e-3f96-4993-9558-654a63dfdac5)
 
