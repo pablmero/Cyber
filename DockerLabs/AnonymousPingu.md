@@ -247,7 +247,12 @@ We have two main options:
         ![imagen](https://github.com/user-attachments/assets/048f9e0c-145b-439d-b8bc-775a44ac7bce)
 
 
-      - Use echo to append to the end of the file
+      - Use echo to append to the end of the file: https://github.com/dgr099/CTF/tree/main/Dockerlabs/AnonymousPingu
+        ![imagen](https://github.com/user-attachments/assets/b342a8c1-b349-4702-9336-2e2ac01a9690)
+
+
+        NO ME FUNCIONA PORQUE YA HABIA MODIFICADO ANTES EL PASSWD, PERO SI LO PROBASEMOS DESDE 0 FUNCIONARIA.
+
       
 
 
