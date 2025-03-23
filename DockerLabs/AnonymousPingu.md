@@ -180,13 +180,127 @@ successful). Let's see what happens if we try to access the reverse shell now ``
 ![imagen](https://github.com/user-attachments/assets/a6af9444-2cce-43cb-8f8b-95f8331d18cc)
 
 If all went well, the web server should have thrown back a shell to your netcat listener.  
-Some useful commans such as w, uname -a, id and pwd are run automatically for you. We are inside the machine! 
+Some useful commans such as w, uname -a, id and pwd are run automatically for you. We are inside the machine! Now we should treat the tty (explained in the bottom of this document)
 
 Let's see who we are ```whoami``` and the privileges we have ```sudo -l```.
 
 ![imagen](https://github.com/user-attachments/assets/d5405837-3506-4fde-8c24-543dab99d494)
 
-As we observe, we are www-data and we cant access anything, but the user pingu can execute ```man```
+As we observe, we are www-data and we cant access anything, but the user pingu can execute ```man``` pages. Manual pages of 
+the Linux OS.
+
+Let's check the existing users (always located in the home directory). We found three different users. (Ubuntu seemed interesting too, but we've got no permission.)
+
+![imagen](https://github.com/user-attachments/assets/f3f3aaa6-ae60-465a-a12f-57e08641ae0c)
+
+But as we could observe earlier, the user pingu could execute the man pages, so let's investigate that. Now we can try two different ways:
+- sudo -u pingu /usr/bin/man <any_command>: Executes the man pages as pingu, and then we can use !/bin/bash inside the man pages and execute it as pingu.
+  ```sudo -u pingu /usr/bin/man find  ``` --> Open ```find``` manual, and once inside type ```!/bin/bash```. You are pingu now!
+  
+  ![imagen](https://github.com/user-attachments/assets/6032aaff-2ba0-4cb5-bb5a-bbc18895bcc2)
+
+
+- GTFOBins: [Man](https://gtfobins.github.io/gtfobins/man/) for sudo superuser. (Follow the steps shown in the sudo part)
+
+Now that we are pingu let's investigate a bit more. ```ls -la``` lists all of the files, even the hidden ones.
+
+![imagen](https://github.com/user-attachments/assets/5d82643e-51a6-40c5-8cb9-7ec8a9f63b5e)
+
+Nothing interesting, so let's repeat the same process we followed with www-data and list the privileges ```sudo -l```
+
+![imagen](https://github.com/user-attachments/assets/8b1ddabe-d2a9-4222-bfca-30bc22af7ff2)
+
+We have new privileges we can access, this time as the user gladys, so let's try again [GTFOBins](https://gtfobins.github.io/gtfobins/dpkg/)
+
+````sudo -u gladys dpkg -l```
+
+![imagen](https://github.com/user-attachments/assets/8e16046a-c03a-4e72-9660-23adfb72c649)
+
+We are Gladys. Repeat process.
+
+![imagen](https://github.com/user-attachments/assets/e47a08c8-6468-4d5b-83fb-48a37e7a1ed6)
+
+
+We finally have an oportunity of escalting privileges to root.  ```chown``` will allow us to change the propietary of any file within the machine, resulting in the possibilty of editing any of those files.
+
+We have two main options:
+- Follow [GTOBins for chown](https://gtfobins.github.io/gtfobins/chown/).
+- Take advantage of ```chown``` properties:
+    - Test if you can execute ```chown```
+     ![imagen](https://github.com/user-attachments/assets/3680829c-debf-4289-8065-f3231b737941)
+    - Use chown to access passwd which is normally property of root. This file is
+      ![imagen](https://github.com/user-attachments/assets/f089227b-be53-4831-800b-0c8af569014a) 
+    - Open the file ```cat /etc/passwd```. 
+      ![imagen](https://github.com/user-attachments/assets/28bed048-d4a3-4e06-a3c5-ce67913debf4)
+    - The ```x``` to the right of the different users listed indicates the need for authentication. If we delete that x, and execute ```su <user>``` no password is going to be requested to change to that user. Let's edit the file the ```nano /etc/passwd```
+     ![imagen](https://github.com/user-attachments/assets/83de5e94-eea7-4193-a4b7-196eca876239)
+
+      Nooooo!! Nano (nor vim nor vi) it's not found (because it is a small container maybe). This makes things more difficult, but we can solve it. Options:
+      - ```sed```: If sed is available it can be used to perform text substitutions ```sed 's/word/substitute/g``` (could be a whole sentence too). For example:
+       ![imagen](https://github.com/user-attachments/assets/0f73f98e-34f6-460a-81e4-636643513d10)
+        So if we apply this to /etc/passwd file:
+
+        ![imagen](https://github.com/user-attachments/assets/251ffba8-c076-465e-b48d-0b9f427751b1)
+ 
+        The passwd got duplicated so we are going to try to fix that mistake:
+
+        ![imagen](https://github.com/user-attachments/assets/048f9e0c-145b-439d-b8bc-775a44ac7bce)
+
+
+      - Use echo to append to the end of the file
+      
+
+
+      
+
+
+ 
+
+
+
+
+
+
+### Treatment of the TTY (Recommendation) 
+
+[Fully interactive TTY](https://territoriohacker.com/tratamiento-de-la-tty/)
+
+Cuando nos conectamos mediante una reverse-shell con otro equipo, en muchas ocasiones nos encontraremos con que la Shell de la que disponemos no son prácticas, las proporciones no son correctas, no podemos utilizar atajos de teclado, al pulsar (Cntrl + L) perdemos la terminal y una larga serie de inconvenientes.
+
+Para evitar todos estos problemas, una vez hemos establecido la Shell inversa, podemos realizar lo que se conoce como un tratamiento de la TTY, para poder disponer de una Shell completamente funcional.
+
+Para saber si nos encontramos en una TTY:
+
+tty
+
+Si nos reporta not a tty introducimos los siguientes comandos:
+
+script /dev/null -c bash
+
+Luego, pulsamos Cntrl + z para salir de la terminal e introducimos el segundo comando:
+
+stty raw echo; fg
+
+Y debajo de este comando a la derecha, escribimos reset xterm para volver a la terminal ya lista.
+
+reset xterm
+
+En caso de no funcionar aún el Ctrl + l para limpiar la terminal, realizamos también lo siguiente:
+
+export SHELL=bash
+export TERM=xterm
+
+💻 Ajustar Proporciones 💻
+
+Para que las proporciones de la terminal sean iguales a las de nuestro sistema debemos ajustar tanto las filas como las columnas. Por ejemplo si abrimos o creamos un archivo con nano este se verá pequeño. Para ajustar estas proporciones primero debemos ir a una de nuestras ventas y ver que proporciones tiene:
+
+stty size
+
+En mi caso mi terminal tiene 52 filas y 189 columnas. Ahora ajustaremos con estos parámetros nuestra Reverse Shell. Para ello escribimos lo siguiente en la terminal de la Reverse Shell:
+
+stty rows 52 columns 189
+
+Ahora ya podríamos utilizar nuestra Shell con completa normalidad y sin peligro de que se cierre o se comporte de forma extraña o limitada y con las proporciones ajustadas.
 
 
 
