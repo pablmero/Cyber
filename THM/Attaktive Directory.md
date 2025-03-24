@@ -41,4 +41,54 @@ Following the THM TASK 2 recommendations we will install Impacket, Bloodhound an
     of in tables or documents. This means you can organize your data in a similar way as when sketching ideas on a whiteboard.
 
 
+## Enumeration
 
+Once connected lets check if there are any ports open. Nmap is a scanning tool. As defined in the THM TASK 3, ```nmap``` can detect what ports are open on a device, what services are running, and even detect what operating system is running. It's important to note that not all services may be deteted correctly and not enumerated to it's fullest potential. Despite nmap being an overly complex utility, it cannot enumerate everything. Therefore after an initial nmap scan we'll be using other utilities to help us enumerate the services running on the device.
+
+```nmap -p- --open --min-rate 5000 -sS -sC -sV -vvv -n -Pn 172.17.0.2 -oG scanfile```
+
+- -p- : Scan all ports
+- --open: Chech just the open ports
+- --min-rate 5000: Send packets faster (faster scanning)
+- -sS: Sync Scan. Fast and silent scan.
+- -sC: Script scanning. (For services running in the open ports)
+- -sV: Version of the service runnning in the port.
+- -vvv: Increase verbosity (more information)
+- -n: No DNS resolution (faster scanning)
+- -Pn: Ignores if the ip is active or not
+- Export result to a file:
+   -oG: Exports the result in a grepable format (to extract more easily the data with tools such as grep, awk)
+   -oN: Export the result to the designated file.
+
+![imagen](https://github.com/user-attachments/assets/b1cf16cc-e2d1-437f-957e-f030447f5f68)
+
+We discovered many open ports (this is only part of the information shown by scan, specifically this info was shown thanks to -vvv which allow us to see the progress of nmap).
+Some important ports among the open are:
+- Port 80
+
+      Ports 80, 443, 8080, and 8443 Vulnerabilities (HTTP and HTTPS)
+        
+        Anyone who has visited a web page has used the HTTP or HTTPS protocols in their web browser. As mentioned, web ports are commonly targeted by attackers for many types of attacks, including:
+    
+        Cross-site scripting. Attackers inject malicious scripts into web pages and applications to steal cookies, tokens, or data.
+        SQL injections. Attackers insert malicious SQL code into input fields to manipulate a database.
+        Cross-site request forgers. An attacker exploits the trust between a user’s web browser and a web application to trick the user into performing actions on a website without their knowledge or consent.
+        DDoS attacks
+
+- Port 445
+
+        SMB 445/TCP is a Microsoft Windows file sharing protocol that can expose networks to unauthorized access and malicious exploits. Cybercriminals can leverage vulnerabilities in this port to inject malware, ransomware, or carry out Denial of Service (DoS) attacks.
+
+Let's check the all the info reported by nmap.
+First, as we previously pointed out, we can check port 80 in the web browser. For now, thanks to nmap, we know the version and the web server used: Microsoft IIS httpd 10.0 --> Apache version 10.0
+
+![imagen](https://github.com/user-attachments/assets/91f53b14-2f7b-4b59-83a2-6bd4bead395c)
+
+In port 389, we find something very interesting, a domain name. We can also find the same domain name in ports 3268 and 3389. In port 3389 we find even more information.
+
+![imagen](https://github.com/user-attachments/assets/b1f408bf-e5ec-4b4b-8027-6d2a166df17c)
+
+Why is a domain name so important? First we need to undestand waht OU (Organizational Units) are. OU is a container within a Microsoft Windows Active Directory (AD) domain that can hold users, groups and computers. The domain is the top OU, ... 
+
+https://serverfault.com/questions/760109/dns-security-com-ad-domains-what-are-the-dangers-to-my-ad-domain-if-someone
+https://www.ionos.es/digitalguide/servidores/configuracion/archivo-hosts/
