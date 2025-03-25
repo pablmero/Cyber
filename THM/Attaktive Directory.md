@@ -88,7 +88,45 @@ In port 389, we find something very interesting, a domain name. We can also find
 
 ![imagen](https://github.com/user-attachments/assets/b1f408bf-e5ec-4b4b-8027-6d2a166df17c)
 
-Why is a domain name so important? First we need to undestand waht OU (Organizational Units) are. OU is a container within a Microsoft Windows Active Directory (AD) domain that can hold users, groups and computers. The domain is the top OU, ... 
+### AD enumerations: Domain Name and hosts file
+Why is a domain name so important? First we need to undestand what OU (Organizational Units) are. OU is a container within a Microsoft Windows Active Directory (AD) domain that can hold users, groups and computers. 
+An [Active Directory domain](https://www.techtarget.com/searchwindowsserver/definition/Active-Directory-domain-AD-domain) (AD domain) is a collection of objects within a Microsoft Active Directory network. An object can be a single user or a group, or it can be a hardware component, such as a computer or printer. Each domain holds a database containing object identity information.
+
+AD is the foundation of most modern Windows-based network management. It's part of the Windows Server family of operating systems (OSes). Conceptually, AD is often visualized as a classic telephone directory where users can look up anyone with a telephone and know their location and the number at which to reach them.
+
+The domain name is usually formed by the domain name plus the TLD. Top-level domain (TLD) or a domain extension is the final part of a web address after the domain name. For example, in spookysec.local, .local is the TLD or in google.com, the TLD is .com.
+
+So let's recap. From this scan we discover the Domain Name of the machine as well as the the full AD domain. For further enumeration we need to add domain name and add it to /etc/hosts.
+A hosts file which is used by operating systems to map a connection between an IP address and domain names before going to domain name servers. This file is a simple text file with the mapping of IPs and domain names.
+The hosts file (whether you're on a PC, Mac, or Linux) is used as a kind of hard override for DNS/host names. That is, instead of doing a normal lookup of a particular host/domain name's IP address, your computer will use the IP that you have defined in the hosts file.
+```echo 10.10.193.34 spookysec.local >> /etc/hosts``` to map the ip of the machine to the domain name. For example, if we execute a ping command to the spookysec.local domain, it will be the same as executing a ping to the ip 10.10...
 
 https://serverfault.com/questions/760109/dns-security-com-ad-domains-what-are-the-dangers-to-my-ad-domain-if-someone
 https://www.ionos.es/digitalguide/servidores/configuracion/archivo-hosts/
+
+### AD enumeration: SMB -> crackmapexec and enum4linux
+
+Let's continue exploring the results of nmap. As we discussed earlier, the port 445 corresponding to SMB was open, so let's check it. We are going to use two different tools for SMB enumeration:
+
+- crackmapexec:
+
+        Very powerful tool for post-exploitation tasks, especially in Active Directory environments. The first versions focused on SMB service enumeration, but nowadays it supports other common protocols in this type of         environment such as Kerberos, LDAP, MS-SQL, WinRM, among others.
+
+    ```crackmapexec smb 10.10....``` SMB service enumeration
+  
+    
+- enum4linux: (Most common one, hint for an answer of TASK 2)
+
+        Enum4linux is a tool for enumerating information from Windows and Samba systems. Allows information to be retrieved via the SMB protocol.
+        Typically, there are SMB shares on a server that can be connected to and used to view or transfer files.
+        SMB can often be a great starting point for an attacker looking to discover sensitive information. Enu4mlinux is a great tool to get SMB information.
+        
+    ```enum4linux -a 10.10...```
+      - -a: Do all simple enumeration (check ```enum4linux -h``` to list all the flags executed)
+
+     In this case we didn´t find anything insteresting but in other cases we might find users and passwords.
+
+  ### Kerberos enumeration: Kerbrute
+  
+
+
